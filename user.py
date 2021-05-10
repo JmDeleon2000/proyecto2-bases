@@ -1,18 +1,39 @@
+from datetime import datetime
+
 uinfo = {'mail':'not logged in'}
 cur = []
 conn = []
 
-def play():
+def play(): #tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
-    print(uinfo)
-def byAlbum():
+    arg = input("What's the name of the song you want to play?: ")
+    if uinfo['playstoday'] >= 3 and not(uinfo['sub']):
+        print('You need to subscribe to be able to play more than 3 songs a day')
+        return
+    uinfo['playstoday'] +=1 
+    try:
+        cur.execute('''SELECT song.iframe FROM song WHERE name = %s''', (arg,))
+        res = cur.fetchall()
+        if not(res):
+            print("We couldn't find that song. Check if you wrote the name correctly")
+            return
+        cur.execute('''SELECT plays FROM users WHERE uid = %s''', (uinfo['uid'],))
+        PLAYS = cur.fetchone()[0] +1
+        cur.execute('''UPDATE users SET plays = %s WHERE uid = %s''', (PLAYS, uinfo['uid']))
+        conn.commit()
+        for i in res:
+            print(i[0])
+    except:
+        conn.rollback()
+        print("Error, something went wrong with the connection")
+    
+def byAlbum():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
     arg = input('Please enter the name of the album you want to search for: ')
-    
     try:
         cur.execute('''SELECT song.name FROM song INNER JOIN album ON song.album = album.albumid WHERE album.name = %s''', (arg,))
         res = cur.fetchall()
@@ -22,9 +43,10 @@ def byAlbum():
         for i in res:
             print(i[0])
     except:
+        conn.rollback()
         print("Error, something went wrong with the connection")
         
-def byGenre():
+def byGenre():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
@@ -39,15 +61,18 @@ def byGenre():
         for i in res:
             print(i[0])
     except:
+        conn.rollback()
         print("Error, something went wrong with the connection")
-def byArtist():
+        
+        
+def byArtist():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
     arg = input('Please enter the name of the artist you want to search for: ')
     
     try:
-        cur.execute('''SELECT song.name FROM song INNER JOIN album ON song.artist = artistid WHERE artist.artistname = %s''', (arg,))
+        cur.execute('''SELECT song.name FROM song INNER JOIN artist ON song.artist = artistid WHERE artist.artistname = %s''', (arg,))
         res = cur.fetchall()
         conn.commit()
         if not(res):
@@ -55,9 +80,10 @@ def byArtist():
         for i in res:
             print(i[0])
     except:
+        conn.rollback()
         print("Error, something went wrong with the connection")
         
-def subscribe():
+def subscribe():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
@@ -65,13 +91,14 @@ def subscribe():
         print('You are already subscribed')
         return
     try:
-        cur.execute('UPDATE users SET suscrito = True  WHERE uid = {user}'.format(user = uinfo['uid']))
+        cur.execute('''UPDATE users SET suscrito = True  WHERE uid = %s''',(uinfo['uid'], datetime.now(),))
         conn.commit()
         uinfo['sub'] = True
     except:
+        conn.rollback()
         print("Error, couldn't subscribe")
     
-def playlist():
+def playlist():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
@@ -89,32 +116,75 @@ INNER JOIN song ON ple.song = songid WHERE pl.name = %s AND pl.users = %s''', (a
             print(i[0])
         conn.commit()
     except:
+        conn.rollback()
         print('Something went wrong with the connection')
-    pass
+        
 def addto():
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
     pass
-def next():
+
+def next():#not to be done
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
     pass
-def last():
+def last():#not to be done
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
     pass
-def newpl():
+
+def newpl():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
-    pass
-def getpls():
+    arg = input('Provide a name for the new playlist: ')
+    try:
+        cur.execute('''SELECT name FROM playlist WHERE name = %s''', (arg,))
+        if not(cur.fetchone()):
+            cur.execute('''SELECT plid FROM playlist ORDER BY plid DESC LIMIT 1''', (arg,))
+            ID = cur.fetchone()[0]+1
+            cur.execute('''INSERT INTO playlist VALUES(%s, %s, %s)''', (ID, arg, uinfo['uid'],))
+            conn.commit()
+        else:
+            conn.rollback()
+            print("Please, use a name you haven't used for other playlist")
+    except:
+        conn.rollback()
+        print('Something went wrong with the connection')
+        
+def getpls():#tested
     if uinfo == {'mail':'not logged in'}:
         print('You need to login first')
         return
-    pass
+    try:
+        cur.execute('''SELECT name FROM  playlist WHERE users = %s''', (uinfo['uid'],))
+        res = cur.fetchall()
+        conn.commit()
+        if not(res):
+            print("Haven't created any playlists")
+        for i in res:
+            print(i[0])
+    except:
+        conn.rollback()
+        print('Something went wrong with the connection')
+        
 def register():
-    pass
+    uname = input("Please provide an e-mail: ")
+    password = input("Please provide a password: ")
+    try:
+        cur.execute('''SELECT mail FROM users WHERE mail = %s''', (uname,))
+        if cur.fetchone():
+            print('That e-mail is already in use')
+            return
+        cur.execute('''SELECT uid FROM users ORDER BY uid DESC LIMIT 1''')
+        ID = cur.fetchone()[0]+1
+        cur.execute('''INSERT INTO users(uid, mail, pw, suscrito, admin, plays)
+VALUES(%s, %s, %s, false, false, 0)''', (ID, uname, password))
+        conn.commit()
+    except:
+        conn.rollback()
+        print('Something went wrong with the connection')
+    
