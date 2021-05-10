@@ -30,6 +30,7 @@ def login():
             uinfo['sub'] = res[3]
             uinfo['plays'] = res[4]
             uinfo['uid'] = res[2]
+            uinfo['playstoday'] = 0
             cur.execute('select artistname from users inner join artist on  artist.artistid = {id}'.format(id = res[2]))
             if cur.fetchone():
                 uinfo['artist'] = True
