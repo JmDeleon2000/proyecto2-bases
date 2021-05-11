@@ -15,7 +15,7 @@ def reports():
     if uinfo == {'mail': 'not logged in'}:
         print('You need to login first')
         return
-    arg = input('\n Reports: \n 1. Most recent albums \n 2. Most popular artist \n 3. New users \n 4. Artist with more tracks \n 5. Most popular genres \n 6. Most active users \n 7.')
+    arg = input('\n Reports: \n 1. Most recent albums \n 2. Most popular artist \n 3. New users \n 4. Artist with more tracks \n 5. Most popular genres \n 6. Most active users \n')
     arg = int(arg)
     if arg == 1:
         try:
@@ -370,3 +370,26 @@ def ventanaRecords():
     records.mainloop()
 ventanaRecords()
 
+#SELECT artist.artistname as name, reps
+#FROM song INNER JOIN artist ON song.artist = artist.artistid 
+#WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
+#GROUP BY artistname, reps 
+#ORDER BY reps DESC
+
+#SELECT song.name, reps
+#FROM song INNER JOIN artist ON song.artist = artist.artistid 
+#WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
+#GROUP BY song.name, reps 
+#ORDER BY reps DESC limit + cantidad 
+
+#SELECT genre, reps
+#FROM song INNER JOIN artist ON song.artist = artist.artistid
+#WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
+#GROUP BY genre, reps 
+#ORDER BY reps DESC
+
+#SELECT artist.artistname, name, reps
+#FROM song INNER JOIN artist ON song.artist = artist.artistid
+#WHERE artist.artistname = 'Sabino' AND date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
+#GROUP BY artist.artistname, name, reps
+#ORDER BY reps DESC
