@@ -39,7 +39,7 @@ def login():
             uinfo['cred'] = res[5]
             uinfo['playstoday'] = 0
             cur.execute(
-                'select artistname from users inner join artist on  artist.artistid = {id}'.format(id=res[2]))
+                'select artistname from users inner join artist on  artist.artistid = {id} where activo = true'.format(id=res[2]))
             if cur.fetchone():
                 uinfo['artist'] = True
             else:
@@ -72,6 +72,7 @@ cli = {
     'NewCredentialProfile': {"descript": "Creates a new credential profile which can be asigned to a user to permit access to administration functionalities", "func": p2admin.newCred},
     'GrantCredentialsTo': {"descript": "Grants specific permissions to a user ", "func": p2admin.grant},
     'GetCredentialProfiles': {"descript": "shows all previously created credential profiles", "func": p2admin.getCreds},
+    'DeactivateArtist': {"descript": "Blocks all artist functions from an account", "func": p2admin.DeactivateArtist},
 
 
 
