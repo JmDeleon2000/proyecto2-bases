@@ -349,6 +349,9 @@ def reports():
 
 
 def ventasSemanales(inicio, final):
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
     cur.execute(
         '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
     auth = cur.fetchone()
@@ -522,12 +525,26 @@ ORDER BY reps DESC LIMIT ''' + cantidad
             connection.close()
             print("PostgreSQL connection is closed")
 
+
 #######################
 ### Ventana grafica ###
 #######################
 
 
 def ventanaRecords():
+
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    cur.execute(
+        '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
 
     values = ["Total sales", "Top sales in artists",
               "Top sales by musical genre", "Most listened tracks by an artist"]
@@ -694,6 +711,18 @@ def ventanaRecords():
 ######################
 
 def earnings():
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    cur.execute(
+        '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
     try:
 
         connection = psycopg2.connect(user = "postgres",
@@ -714,9 +743,9 @@ ORDER BY earnings DESC'''
 
         for row in result:
             print("Artist =", row[0])
-            print("Song =", row[2])
+            print("Song =", row[1])
             print("Reps =", row[2])
-            print("Earnings $USD =", row[2])
+            print("Earnings $USD =", row[3])
             print("\n")
 
         connection.commit()
