@@ -689,28 +689,47 @@ def ventanaRecords():
 
     records.mainloop()
 
+######################
+##### Comisiones #####
+######################
 
-# SELECT artist.artistname as name, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY artistname, reps
-# ORDER BY reps DESC
+def earnings():
+    try:
 
-# SELECT song.name, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY song.name, reps
-# ORDER BY reps DESC limit + cantidad
+        connection = psycopg2.connect(user = "postgres",
+                                      password = "123456",
+                                      host = "localhost",
+                                      port = "5433",
+                                      database = "proyecto2")
+        cursor = connection.cursor()
 
-# SELECT genre, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY genre, reps
-# ORDER BY reps DESC
+        create_table_query = '''SELECT artist.artistname, name, reps, reps-(reps*0.7) as earnings
+FROM song INNER JOIN artist ON song.artist = artist.artistid
+GROUP BY artist.artistname, name, reps
+ORDER BY earnings DESC'''
 
-# SELECT artist.artistname, name, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE artist.artistname = 'Sabino' AND date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY artist.artistname, name, reps
-# ORDER BY reps DESC
+        cursor.execute(create_table_query)
 
+        result = cursor.fetchall()
+
+        for row in result:
+            print("Artist =", row[0])
+            print("Song =", row[2])
+            print("Reps =", row[2])
+            print("Earnings $USD =", row[2])
+            print("\n")
+
+        connection.commit()
+
+        #messagebox.showinfo(message=result, title="Consulta")
+    except (Exception, psycopg2.DatabaseError) as error:
+        messagebox.showerror(
+            message="No se encontro el producto.", title="Consulta fallida")
+        print("No se pudo realizar lo solicitado", error)
+
+    finally:
+        # closing database connection.
+        if(connection):
+            cursor.close()
+            connection.close()
+            print("PostgreSQL connection is closed")

@@ -72,6 +72,7 @@ cli = {
     'getPlaylists': {"descript": "shows all playlists owned by you", "func": user.getpls},
     'reports': {"descript": "shows reports on a period of time", "func": user.reports},
     'records': {"descript": "shows part 2 of reports on a period of time", "func": user.ventanaRecords},
+    'earnings': {"descript": "report of how much earning a song has", "func": user.earnings},
     'createCredentialProfile': {"descript": "Creates a new credentials profile", "func": p2admin.newCred},
     'grantPermissions': {"descript": "Grants a credential profile to a user", "func": p2admin.grant},
     'getCredentialProfiles': {"descript": "Shows all previously created credential profiles", "func": p2admin.getCreds},
