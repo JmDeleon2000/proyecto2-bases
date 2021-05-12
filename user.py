@@ -1,4 +1,5 @@
 from datetime import datetime
+import webbrowser
 
 uinfo = {'mail': 'not logged in'}
 cur = []
@@ -28,6 +29,7 @@ def play():  # tested
         conn.commit()
         for i in res:
             print(i[0])
+            webbrowser.open(i[0], new=2)
     except:
         conn.rollback()
         print("Error, something went wrong with the connection")
