@@ -1,3 +1,11 @@
+import tkinter as tk
+from tkcalendar import *
+from psycopg2 import Error
+import psycopg2
+from tkinter import ttk
+from tkinter import Entry
+from random import randint
+from tkinter import messagebox
 from datetime import datetime
 import webbrowser
 
@@ -100,14 +108,17 @@ def subscribe():  # tested
     if uinfo['sub']:
         print('You are already subscribed')
         return
-    try:
-        cur.execute('''UPDATE users SET suscrito = True  WHERE uid = %s''',
-                    (uinfo['uid'], datetime.now(),))
-        conn.commit()
-        uinfo['sub'] = True
-    except:
-        conn.rollback()
-        print("Error, couldn't subscribe")
+
+        # mod_users(u_id int, sub boolean, reps int, sub_date date, per int, is_banned boolean, changer varchar)
+    cur.execute('''SELECT * FROM users WHERE uid = %s''', (uinfo['uid'],))
+    user = cur.fetchone()
+    cur.execute('''SELECT * FROM mod_users(%s, %s, %s, %s::date, %s, %s, %s)''',
+                (uinfo['uid'], True, user[5], datetime.now(), user[7], user[8],  uinfo['mail'],))
+    conn.commit()
+    uinfo['sub'] = True
+    # except:
+    #    conn.rollback()
+    #    print("Error, couldn't subscribe")
 
 
 def playlist():  # tested
@@ -162,8 +173,8 @@ def addto():
         entryid = cur.fetchone()
         if not(entryid):
             entryid = (0,)
-        cur.execute('''INSERT INTO plentry VALUES(%s, %s, %s)''',
-                    (entryid[0], plinfo[1], songinfo[1]))
+        cur.execute('''select * from add_plentry(%s, %s, %s, %s)''',
+                    (entryid[0], plinfo[1], songinfo[1], uinfo['mail'],))
         conn.commit()
     else:
         conn.rollback()
@@ -233,14 +244,6 @@ def register():
         conn.rollback()
         print('Something went wrong with the connection')
 
-import tkinter as tk
-from tkinter import messagebox
-from random import randint
-from tkinter import Entry
-from tkinter import ttk
-import psycopg2
-from psycopg2 import Error
-from tkcalendar import *
 
 uinfo = {'mail': 'not logged in'}
 cur = []
@@ -365,16 +368,16 @@ def ventasSemanales(inicio, final):
         return
     try:
 
-        connection = psycopg2.connect(user = "postgres",
-                                      password = "123456",
-                                      host = "localhost",
-                                      port = "5433",
-                                      database = "proyecto2")
+        connection = psycopg2.connect(user="postgres",
+                                      password="123456",
+                                      host="localhost",
+                                      port="5433",
+                                      database="proyecto2")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT count(name) as sales, name
 FROM sales INNER JOIN song ON sales.song = song.songid
-WHERE sales.saledate > '''+ "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
+WHERE sales.saledate > ''' + "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
 GROUP BY name
 ORDER BY sales DESC'''
 
@@ -406,16 +409,16 @@ ORDER BY sales DESC'''
 def ventasArtista(inicio, final, cantidad):
     try:
 
-        connection = psycopg2.connect(user = "postgres",
-                                      password = "123456",
-                                      host = "localhost",
-                                      port = "5433",
-                                      database = "proyecto2")
+        connection = psycopg2.connect(user="postgres",
+                                      password="123456",
+                                      host="localhost",
+                                      port="5433",
+                                      database="proyecto2")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT count(name) as sales, name, artist.artistname
 FROM sales INNER JOIN song ON sales.song = song.songid INNER JOIN artist ON song.artist = artist.artistid
-WHERE sales.saledate > '''+ "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
+WHERE sales.saledate > ''' + "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
 GROUP BY name, artist.artistname
 ORDER BY sales DESC LIMIT ''' + cantidad
 
@@ -448,16 +451,16 @@ ORDER BY sales DESC LIMIT ''' + cantidad
 def ventasGenero(inicio, final, cantidad):
     try:
 
-        connection = psycopg2.connect(user = "postgres",
-                                      password = "123456",
-                                      host = "localhost",
-                                      port = "5433",
-                                      database = "proyecto2")
+        connection = psycopg2.connect(user="postgres",
+                                      password="123456",
+                                      host="localhost",
+                                      port="5433",
+                                      database="proyecto2")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT count(name) as sales, song.genre
 FROM sales INNER JOIN song ON sales.song = song.songid 
-WHERE sales.saledate > '''+ "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
+WHERE sales.saledate > ''' + "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
 GROUP BY song.genre
 ORDER BY sales DESC LIMIT ''' + cantidad
 
@@ -489,16 +492,16 @@ ORDER BY sales DESC LIMIT ''' + cantidad
 def masRep(cantidad, artista):
     try:
 
-        connection = psycopg2.connect(user = "postgres",
-                                      password = "123456",
-                                      host = "localhost",
-                                      port = "5433",
-                                      database = "proyecto2")
+        connection = psycopg2.connect(user="postgres",
+                                      password="123456",
+                                      host="localhost",
+                                      port="5433",
+                                      database="proyecto2")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT artist.artistname, name, reps
 FROM song INNER JOIN artist ON song.artist = artist.artistid
-WHERE artist.artistname = '''+ "'" + artista + "'" + '''
+WHERE artist.artistname = ''' + "'" + artista + "'" + '''
 GROUP BY artist.artistname, name, reps
 ORDER BY reps DESC LIMIT ''' + cantidad
 
@@ -712,6 +715,7 @@ def ventanaRecords():
 ##### Comisiones #####
 ######################
 
+
 def earnings():
     if uinfo == {'mail': 'not logged in'}:
         print('You need to login first')
@@ -727,11 +731,11 @@ def earnings():
         return
     try:
 
-        connection = psycopg2.connect(user = "postgres",
-                                      password = "123456",
-                                      host = "localhost",
-                                      port = "5433",
-                                      database = "proyecto2")
+        connection = psycopg2.connect(user="postgres",
+                                      password="123456",
+                                      host="localhost",
+                                      port="5433",
+                                      database="proyecto2")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT artist.artistname, name, reps, reps-(reps*0.7) as earnings

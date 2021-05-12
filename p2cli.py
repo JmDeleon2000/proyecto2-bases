@@ -3,23 +3,27 @@ from psycopg2 import Error
 import user
 import reports
 import p2admin
+import artist
 
-connection = psycopg2.connect(user = "postgres",
-                                      password = "123456",
-                                      host = "localhost",
-                                      port = "5433",
-                                      database = "proyecto2")
+connection = psycopg2.connect(user="postgres",
+                              password="pw4pg",
+                              host="localhost",
+                              port="5432",
+                              database="p2")
 cur = connection.cursor()
 user.cur = cur
 user.conn = connection
 p2admin.cur = cur
 p2admin.conn = connection
+artist.cur = cur
+artist.conn = connection
 
 
 def help():
     for i in cli.keys():
         print(i + ': ' + cli[i]['descript'])
-        
+
+
 def login():
     mail = input('please enter you e-mail: ')
     pw = input('please enter your password: ')
@@ -53,6 +57,7 @@ def login():
         print("Email no registrado", error)
     user.uinfo = uinfo
     p2admin.uinfo = uinfo
+    artist.uinfo = uinfo
 
 
 cli = {
@@ -68,7 +73,7 @@ cli = {
     'addto': {"descript": "adds a song to a playlist", "func": user.addto},
     # 'next':{"descript":"plays the next song in the current playlist", "func":user.next},
     # 'last':{"descript":"plays the last song in the current playlist", "func":user.last},
-    'CreatePlaylist': {"descript": "creates a playlist", "func": user.newpl},
+    'createPlaylist': {"descript": "creates a playlist", "func": user.newpl},
     'getPlaylists': {"descript": "shows all playlists owned by you", "func": user.getpls},
     'reports': {"descript": "shows reports on a period of time", "func": user.reports},
     'records': {"descript": "shows part 2 of reports on a period of time", "func": user.ventanaRecords},
@@ -76,15 +81,16 @@ cli = {
     'createCredentialProfile': {"descript": "Creates a new credentials profile", "func": p2admin.newCred},
     'grantPermissions': {"descript": "Grants a credential profile to a user", "func": p2admin.grant},
     'getCredentialProfiles': {"descript": "Shows all previously created credential profiles", "func": p2admin.getCreds},
-    'deactivateArtists': {"descript": "Blocks an artist from using artist features", "func": p2admin.DeactivateArtist},
+    'deactivateArtist': {"descript": "Blocks an artist from using artist features", "func": p2admin.DeactivateArtist},
     'showLogs': {"descript": "Shows all log changes", "func": p2admin.bitacora},
     'removeSubscription': {"descript": "Cancels a subscription", "func": p2admin.killSub},
     'ban': {"descript": "Bans an unsubscribed user", "func": p2admin.ban},
+    'becomeArtist': {"descript": "Allows you to create an artist profile and upload songs and albums", "func": artist.new_artist},
 
 
 }
 
-uinfo = {'mail':'not logged in'}
+uinfo = {'mail': 'not logged in'}
 
 end = False
 while not(end):

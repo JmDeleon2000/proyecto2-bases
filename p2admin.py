@@ -119,8 +119,11 @@ def killSub():  # tested
     arg = input(
         'Provide the e-mail of the user whose subscription you want to cancel: ')
     try:
-        cur.execute(
-            '''UPDATE users SET suscrito = false WHERE mail = %s''', (arg,))
+        cur.execute('''SELECT * FROM users WHERE mail = %s''', (arg,))
+        res = cur.fetchone()
+        # mod_users(u_id int, sub boolean, reps int, sub_date date, per int, is_banned boolean, changer varchar)
+        cur.execute('''SELECT * FROM mod_users(%s, %s, %s, %s, %s, %s, %s)''',
+                    (res[0], False, res[5], res[6], res[7], res[8], uinfo['mail']))
         conn.commit()
     except:
         conn.rollback()
@@ -143,14 +146,18 @@ def DeactivateArtist():  # tested
     arg = input('Provide the name of the artist you want to deactivate: ')
     try:
         cur.execute(
-            '''UPDATE artist SET activo = false WHERE artistname = %s''', (arg,))
+            '''SELECT artistid FROM artist WHERE artistname = %s''', (arg,))
+        res = cur.fetchone()[0]
+        # mod_artist(artist_id int, artist_name varchar, n_activo boolean, changer varchar)
+        cur.execute(
+            '''SELECT * FROM mod_artist(%s, %s, %s, %s)''', (res, arg, False, uinfo['mail']))
         conn.commit()
     except:
         conn.rollback()
         print('Something went wrong with the connection')
 
 
-def bitacora():
+def bitacora():  # tested
     if uinfo == {'mail': 'not logged in'}:
         print('You need to login first')
         return
@@ -163,7 +170,36 @@ def bitacora():
     if not(auth[0]):
         print("You don't have permissions to use this function")
         return
-    pass
+    try:
+        print('users:')
+        cur.execute('''SELECT * FROM users_log''')
+        users = cur.fetchall()
+        for i in users:
+            print(i)
+        print('Artists: ')
+        cur.execute('''SELECT * FROM artist_log''')
+        artist = cur.fetchall()
+        for i in artist:
+            print(i)
+        print('songs: ')
+        cur.execute('''SELECT * FROM song_log''')
+        song = cur.fetchall()
+        for i in song:
+            print(i)
+        print('playlists: ')
+        cur.execute('''SELECT * FROM playlist_log''')
+        pl = cur.fetchall()
+        for i in pl:
+            print(i)
+        print('songs: ')
+        cur.execute('''SELECT * FROM album_log''')
+        album = cur.fetchall()
+        for i in album:
+            print(i)
+        conn.commit()
+    except:
+        print('Something went wrong with the connection')
+        conn.rollback()
 
 
 def ban():  # tested
@@ -197,3 +233,11 @@ def ban():  # tested
     except:
         conn.rollback()
         print('Something went wrong with the connection')
+
+
+def enable_song():  # verpermisos aca
+    pass
+
+
+def enable_album():
+    pass
