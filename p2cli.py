@@ -1,11 +1,12 @@
 import psycopg2
 from psycopg2 import Error
 import user
+import reports
 
 connection = psycopg2.connect(user = "postgres",
-                                      password = "pw4pg",
+                                      password = "123456",
                                       host = "localhost",
-                                      port = "5432",
+                                      port = "5433",
                                       database = "proyecto2")
 cur = connection.cursor()
 user.cur = cur
@@ -61,7 +62,8 @@ cli ={
     #'last':{"descript":"plays the last song in the current playlist", "func":user.last},
     'CreatePlaylist':{"descript":"creates a playlist", "func":user.newpl},
     'getPlaylists':{"descript":"shows all playlists owned by you", "func":user.getpls},
-    
+    'reports':{"descript":"shows reports on a period of time", "func":reports.reports},
+    'records':{"descript":"shows part 2 of reports on a period of time", "func":reports.ventanaRecords},
     
     
     }
