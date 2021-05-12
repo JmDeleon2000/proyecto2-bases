@@ -413,30 +413,3 @@ def ventanaRecords():
     label6.pack(side=tk.TOP)
 
     records.mainloop()
-
-
-# SELECT artist.artistname as name, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY artistname, reps
-# ORDER BY reps DESC
-
-
-
-# SELECT song.name, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY song.name, reps
-# ORDER BY reps DESC limit + cantidad
-
-# SELECT genre, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY genre, reps
-# ORDER BY reps DESC
-
-# SELECT artist.artistname, name, reps
-# FROM song INNER JOIN artist ON song.artist = artist.artistid
-# WHERE artist.artistname = 'Sabino' AND date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
-# GROUP BY artist.artistname, name, reps
-# ORDER BY reps DESC + cantidad

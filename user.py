@@ -266,6 +266,10 @@ def reports():
                 '''SELECT name, release_date FROM album  WHERE release_date > '2021-03-20' ORDER BY release_date DESC limit 3''', (arg,))
             res = cur.fetchall()
             conn.commit()
+            for row in res:
+                print("Name =", row[0])
+                print("Release date =", row[1])
+                print("\n")
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
@@ -276,6 +280,9 @@ def reports():
                 '''SELECT artistname as name FROM artist  INNER JOIN song ON song.artist = artistid GROUP BY artistname ORDER BY sum(song.reps) LIMIT 3''', (arg,))
             res = cur.fetchall()
             conn.commit()
+            for row in res:
+                print("Artist name =", row[0])
+                print("\n")
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
@@ -286,6 +293,9 @@ def reports():
                 '''SELECT count(subdate) as name FROM users WHERE subdate > '2020-09-01' limit 3''', (arg,))
             res = cur.fetchall()
             conn.commit()
+            for row in res:
+                print("New users the past 3 months =", row[0])
+                print("\n")
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
@@ -295,6 +305,10 @@ def reports():
             cur.execute('''SELECT artist.artistname as name, count(artist.artistname) FROM song INNER JOIN artist ON song.artist = artist.artistid GROUP BY artistname ORDER BY count DESC limit 3''', (arg,))
             res = cur.fetchall()
             conn.commit()
+            for row in res:
+                print("Artist name =", row[0])
+                print("Number of tracks =", row[1])
+                print("\n")
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
@@ -305,6 +319,9 @@ def reports():
                 '''SELECT  genre as name FROM song GROUP BY genre order BY count(*) DESC limit 3''', (arg,))
             res = cur.fetchall()
             conn.commit()
+            for row in res:
+                print("Genre =", row[0])
+                print("\n")
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
@@ -315,6 +332,10 @@ def reports():
                 '''SELECT mail as name, plays FROM users order BY plays DESC limit 3''', (arg,))
             res = cur.fetchall()
             conn.commit()
+            for row in res:
+                print("User =", row[0])
+                print("Songs played =", row[1])
+                print("\n")
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
