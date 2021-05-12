@@ -16,6 +16,15 @@ def reports():
     if uinfo == {'mail': 'not logged in'}:
         print('You need to login first')
         return
+    cur.execute(
+        '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
     arg = input('\n Reports: \n 1. Most recent albums \n 2. Most popular artist \n 3. New users \n 4. Artist with more tracks \n 5. Most popular genres \n 6. Most active users \n')
     arg = int(arg)
     if arg == 1:
@@ -86,6 +95,15 @@ def reports():
 
 
 def ventasSemanales(inicio, final):
+    cur.execute(
+        '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
     try:
 
         connection = psycopg2.connect(user = "postgres",

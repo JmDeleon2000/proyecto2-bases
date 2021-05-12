@@ -62,8 +62,8 @@ cli ={
     #'last':{"descript":"plays the last song in the current playlist", "func":user.last},
     'CreatePlaylist':{"descript":"creates a playlist", "func":user.newpl},
     'getPlaylists':{"descript":"shows all playlists owned by you", "func":user.getpls},
-    'reports':{"descript":"shows reports on a period of time", "func":reports.reports},
-    'records':{"descript":"shows part 2 of reports on a period of time", "func":reports.ventanaRecords},
+    'reports':{"descript":"shows reports on a period of time", "func":user.reports},
+    'records':{"descript":"shows part 2 of reports on a period of time", "func":user.ventanaRecords},
     
     
     }
