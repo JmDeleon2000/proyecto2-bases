@@ -421,6 +421,8 @@ def ventanaRecords():
 # GROUP BY artistname, reps
 # ORDER BY reps DESC
 
+
+
 # SELECT song.name, reps
 # FROM song INNER JOIN artist ON song.artist = artist.artistid
 # WHERE date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
@@ -437,4 +439,4 @@ def ventanaRecords():
 # FROM song INNER JOIN artist ON song.artist = artist.artistid
 # WHERE artist.artistname = 'Sabino' AND date > '''+ "'" + inicio + "'" + ''' and date < ''' + "'" + final + "'" + '''
 # GROUP BY artist.artistname, name, reps
-# ORDER BY reps DESC
+# ORDER BY reps DESC + cantidad

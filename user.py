@@ -346,7 +346,11 @@ def ventasSemanales(inicio, final):
                                       database = "proyecto2")
         cursor = connection.cursor()
 
-        create_table_query = ''''''
+        create_table_query = '''SELECT count(name) as sales, name
+FROM sales INNER JOIN song ON sales.song = song.songid
+WHERE sales.saledate > '''+ "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
+GROUP BY name
+ORDER BY sales DESC'''
 
         cursor.execute(create_table_query)
 
@@ -354,7 +358,12 @@ def ventasSemanales(inicio, final):
 
         connection.commit()
 
-        messagebox.showinfo(message=result, title="Consulta")
+        for row in result:
+            print("Sales =", row[0])
+            print("Song name =", row[1])
+            print("\n")
+
+        #messagebox.showinfo(message=result, title="Consulta")
     except (Exception, psycopg2.DatabaseError) as error:
         messagebox.showerror(
             message="No se encontro el producto.", title="Consulta fallida")
@@ -378,21 +387,25 @@ def ventasArtista(inicio, final, cantidad):
                                       database = "proyecto2")
         cursor = connection.cursor()
 
-        create_table_query = ''''''
+        create_table_query = '''SELECT count(name) as sales, name, artist.artistname
+FROM sales INNER JOIN song ON sales.song = song.songid INNER JOIN artist ON song.artist = artist.artistid
+WHERE sales.saledate > '''+ "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
+GROUP BY name, artist.artistname
+ORDER BY sales DESC LIMIT ''' + cantidad
 
         cursor.execute(create_table_query)
 
         result = cursor.fetchall()
 
         for row in result:
-            print("Fecha =", row[0])
-            print("Artista =", row[1])
-            print("Id Cancion =", row[2])
-            print("Total Totales =", row[3], "\n")
+            print("Sales =", row[0])
+            print("Song  =", row[1])
+            print("Artist =", row[2])
+            print("\n")
 
         connection.commit()
 
-        messagebox.showinfo(message=result, title="Consulta")
+        #messagebox.showinfo(message=result, title="Consulta")
     except (Exception, psycopg2.DatabaseError) as error:
         messagebox.showerror(
             message="No se encontro el producto.", title="Consulta fallida")
@@ -416,21 +429,24 @@ def ventasGenero(inicio, final, cantidad):
                                       database = "proyecto2")
         cursor = connection.cursor()
 
-        create_table_query = ''''''
+        create_table_query = '''SELECT count(name) as sales, song.genre
+FROM sales INNER JOIN song ON sales.song = song.songid 
+WHERE sales.saledate > '''+ "'" + inicio + "'" + ''' and sales.saledate < ''' + "'" + final + "'" + '''
+GROUP BY song.genre
+ORDER BY sales DESC LIMIT ''' + cantidad
 
         cursor.execute(create_table_query)
 
         result = cursor.fetchall()
 
         for row in result:
-            print("Fecha =", row[0])
-            print("Genero =", row[1])
-            print("Id Cancion =", row[2])
-            print("Total Ventas =", row[3], "\n")
+            print("Sales =", row[0])
+            print("Genre =", row[1])
+            print("\n")
 
         connection.commit()
 
-        messagebox.showinfo(message=result, title="Consulta")
+        #messagebox.showinfo(message=result, title="Consulta")
     except (Exception, psycopg2.DatabaseError) as error:
         messagebox.showerror(
             message="No se encontro el producto.", title="Consulta fallida")
@@ -454,20 +470,25 @@ def masRep(cantidad, artista):
                                       database = "proyecto2")
         cursor = connection.cursor()
 
-        create_table_query = ''''''
+        create_table_query = '''SELECT artist.artistname, name, reps
+FROM song INNER JOIN artist ON song.artist = artist.artistid
+WHERE artist.artistname = '''+ "'" + artista + "'" + '''
+GROUP BY artist.artistname, name, reps
+ORDER BY reps DESC LIMIT ''' + cantidad
 
         cursor.execute(create_table_query)
 
         result = cursor.fetchall()
 
         for row in result:
-            print("Artista =", row[0])
-            print("Nombre de la cancion =", row[1])
-            print("Numero de reproducciones =", row[2])
+            print("Artist =", row[0])
+            print("Song name =", row[1])
+            print("Reps =", row[2])
+            print("\n")
 
         connection.commit()
 
-        messagebox.showinfo(message=result, title="Consulta")
+        #messagebox.showinfo(message=result, title="Consulta")
     except (Exception, psycopg2.DatabaseError) as error:
         messagebox.showerror(
             message="No se encontro el producto.", title="Consulta fallida")
@@ -568,7 +589,7 @@ def ventanaRecords():
     label2.pack(side=tk.LEFT, ipady=7)
 
     date = DateEntry(campo2, background='darkblue',
-                     foreground='white', year=2020, state='readonly')
+                     foreground='white', year=2021, state='readonly')
     date.pack(side=tk.LEFT)
 
     label3 = tk.Label(campo2, text="     End:", font=(
@@ -576,7 +597,7 @@ def ventanaRecords():
     label3.pack(side=tk.LEFT, ipady=7)
 
     date2 = DateEntry(campo2, background='darkblue',
-                      foreground='white', year=2020, state='readonly')
+                      foreground='white', year=2021, state='readonly')
     date2.pack(side=tk.LEFT)
 
     campo2.pack(side=tk.TOP)
