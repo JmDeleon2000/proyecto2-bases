@@ -235,9 +235,89 @@ def ban():  # tested
         print('Something went wrong with the connection')
 
 
-def enable_song():  # verpermisos aca
-    pass
+def enable_song():  # ver permisos aca
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    cur.execute(
+        '''SELECT p2 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
+    arg = input(
+        'Do you want the song to be enabled (visible)? (y for yes or n for no): ')
+    if arg == 'y':
+        vis = True
+    elif arg == 'n':
+        vis = False
+    else:
+        print('Error, make sure to use lower case y or n')
+        return
+    song = input(
+        'Provide the name of the song you want to enable or disable: ')
+    cur.execute('''SELECT * FROM song WHERE name = %s''', (song,))
+    song = cur.fetchone()
+    if song:
+        try:
+            # mod_song(song_id int, n_artist int, n_name varchar, n_genre varchar,
+            #							n_album int, n_reps int, n_visible boolean, n_iframe varchar, changer varchar)
+            cur.execute('''SELECT * FROM mod_song(%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                        (song[0], song[1], song[2], song[3], song[4], song[5], vis, song[7], uinfo['mail'],))
+            conn.commit()
+        except:
+            conn.rollback()
+            print('Something went wrong with the connection')
+    else:
+        print("That song doesn't exist")
+        return
 
 
 def enable_album():
-    pass
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    cur.execute(
+        '''SELECT p2 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
+    arg = input(
+        'Do you want the album to be enabled (visible)? (y for yes or n for no): ')
+    if arg == 'y':
+        vis = True
+    elif arg == 'n':
+        vis = False
+    else:
+        print('Error, make sure to use lower case y or n')
+        return
+    album = input(
+        'Provide the name of the album you want to enable or disable: ')
+    cur.execute('''SELECT albumid FROM album WHERE name = %s''', (album,))
+    albumid = cur.fetchone()
+    if not(albumid):
+        print("That album doesn't exist")
+        return
+    cur.execute('''SELECT * FROM song WHERE album = %s''', (albumid[0],))
+    songs = cur.fetchall()
+    if songs:
+        try:
+            # mod_song(song_id int, n_artist int, n_name varchar, n_genre varchar,
+            #							n_album int, n_reps int, n_visible boolean, n_iframe varchar, changer varchar)
+            for song in songs:
+                cur.execute('''SELECT * FROM mod_song(%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                            (song[0], song[1], song[2], song[3], song[4], song[5], vis, song[7], uinfo['mail'],))
+            conn.commit()
+        except:
+            conn.rollback()
+            print('Something went wrong with the connection')
+    else:
+        print("That song doesn't exist")
+        return

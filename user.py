@@ -24,7 +24,8 @@ def play():  # tested
         return
     uinfo['playstoday'] += 1
     try:
-        cur.execute('''SELECT song.iframe FROM song WHERE name = %s''', (arg,))
+        cur.execute(
+            '''SELECT song.iframe FROM song WHERE name = %s AND visible = true''', (arg,))
         res = cur.fetchall()
         if not(res):
             print("We couldn't find that song. Check if you wrote the name correctly")
@@ -195,8 +196,9 @@ def newpl():  # tested
             cur.execute(
                 '''SELECT plid FROM playlist ORDER BY plid DESC LIMIT 1''', (arg,))
             ID = cur.fetchone()[0]+1
-            cur.execute('''INSERT INTO playlist VALUES(%s, %s, %s)''',
-                        (ID, arg, uinfo['uid'],))
+            # public.new_playlist(pl_id integer, n_name character varying, n_users integer, changer character varying)
+            cur.execute('''SELECT * FROM new_playlist(%s, %s, %s, %s)''',
+                        (ID, arg, uinfo['uid'], uinfo['mail'], ))
             conn.commit()
         else:
             conn.rollback()

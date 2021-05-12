@@ -43,7 +43,7 @@ def login():
             uinfo['cred'] = res[5]
             uinfo['playstoday'] = 0
             cur.execute(
-                'select artistname from users inner join artist on  artist.artistid = {id}'.format(id=res[2]))
+                'select artistname from users inner join artist on  artist.artistid = {id} where activo = true'.format(id=res[2]))
             if cur.fetchone():
                 uinfo['artist'] = True
             else:
@@ -86,6 +86,14 @@ cli = {
     'removeSubscription': {"descript": "Cancels a subscription", "func": p2admin.killSub},
     'ban': {"descript": "Bans an unsubscribed user", "func": p2admin.ban},
     'becomeArtist': {"descript": "Allows you to create an artist profile and upload songs and albums", "func": artist.new_artist},
+    'enableSong': {"descript": "Enables or disables any song", "func": p2admin.enable_song},
+    'enableAlbum': {"descript": "Enables or disables all songs in an album", "func": p2admin.enable_album},
+    'changeName': {"descript": "Changes your artist screen name", "func": artist.change_name},
+    'newSong': {"descript": "Adds a new song", "func": artist.new_song},
+    'changeSong': {"descript": "Changes the information of any song", "func": artist.mod_song},
+    'newAlbum': {"descript": "Creates a new album", "func": artist.new_album},
+    'changeAlbum': {"descript": "Changes the information of any album", "func": artist.mod_album},
+
 
 
 }
