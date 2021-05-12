@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import Error
 import user
+import reports
 import p2admin
 
 connection = psycopg2.connect(user="postgres",
@@ -25,7 +26,7 @@ def login():
     pw = input('please enter your password: ')
     try:
         cur.execute(
-            '''select pw, admin, uid, suscrito, plays, credenciales from users where mail = %s''', (mail,))
+            '''select pw, admin, uid, suscrito, plays, credenciales from users where mail = %s and banned = false''', (mail,))
         res = cur.fetchone()
         if not(res):
             print('Wrong e-mail or password')
@@ -39,7 +40,7 @@ def login():
             uinfo['cred'] = res[5]
             uinfo['playstoday'] = 0
             cur.execute(
-                'select artistname from users inner join artist on  artist.artistid = {id} where activo = true'.format(id=res[2]))
+                'select artistname from users inner join artist on  artist.artistid = {id}'.format(id=res[2]))
             if cur.fetchone():
                 uinfo['artist'] = True
             else:
@@ -66,14 +67,19 @@ cli = {
     'subscribe': {"descript": "adds a subscription allowing for indefinite playtime and creating playlists", "func": user.subscribe},
     'playlist': {"descript": "plays a given playlist", "func": user.playlist},
     'addto': {"descript": "adds a song to a playlist", "func": user.addto},
+    # 'next':{"descript":"plays the next song in the current playlist", "func":user.next},
+    # 'last':{"descript":"plays the last song in the current playlist", "func":user.last},
     'CreatePlaylist': {"descript": "creates a playlist", "func": user.newpl},
-    'GetPlaylists': {"descript": "shows all playlists owned by you", "func": user.getpls},
-    # admin
-    'NewCredentialProfile': {"descript": "Creates a new credential profile which can be asigned to a user to permit access to administration functionalities", "func": p2admin.newCred},
-    'GrantCredentialsTo': {"descript": "Grants specific permissions to a user ", "func": p2admin.grant},
-    'GetCredentialProfiles': {"descript": "shows all previously created credential profiles", "func": p2admin.getCreds},
-    'DeactivateArtist': {"descript": "Blocks all artist functions from an account", "func": p2admin.DeactivateArtist},
-
+    'getPlaylists': {"descript": "shows all playlists owned by you", "func": user.getpls},
+    'reports': {"descript": "shows reports on a period of time", "func": reports.reports},
+    'records': {"descript": "shows part 2 of reports on a period of time", "func": reports.ventanaRecords},
+    'createCredentialProfile': {"descript": "Creates a new credentials profile", "func": p2admin.newCred},
+    'grantPermissions': {"descript": "Grants a credential profile to a user", "func": p2admin.grant},
+    'getCredentialProfiles': {"descript": "Shows all previously created credential profiles", "func": p2admin.getCreds},
+    'deactivateArtists': {"descript": "Blocks an artist from using artist features", "func": p2admin.DeactivateArtist},
+    'showLogs': {"descript": "Shows all log changes", "func": p2admin.bitacora},
+    'removeSubscription': {"descript": "Cancels a subscription", "func": p2admin.killSub},
+    'ban': {"descript": "Bans an unsubscribed user", "func": p2admin.ban},
 
 
 }

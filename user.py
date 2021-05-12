@@ -224,8 +224,8 @@ def register():
             return
         cur.execute('''SELECT uid FROM users ORDER BY uid DESC LIMIT 1''')
         ID = cur.fetchone()[0]+1
-        cur.execute('''INSERT INTO users(uid, mail, pw, suscrito, admin, plays)
-VALUES(%s, %s, %s, false, false, 0)''', (ID, uname, password))
+        cur.execute('''select * from new_users(%s, %s, %s, %s)''',
+                    (ID, uname, password, uname))
         conn.commit()
     except:
         conn.rollback()
