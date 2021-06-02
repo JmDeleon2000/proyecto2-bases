@@ -6,10 +6,10 @@ import p2admin
 import artist
 
 connection = psycopg2.connect(user="postgres",
-                              password="pw4pg",
+                              password="123456",
                               host="localhost",
-                              port="5432",
-                              database="p2")
+                              port="5433",
+                              database="proyecto3")
 cur = connection.cursor()
 user.cur = cur
 user.conn = connection
@@ -93,6 +93,7 @@ cli = {
     'changeSong': {"descript": "Changes the information of any song", "func": artist.mod_song},
     'newAlbum': {"descript": "Creates a new album", "func": artist.new_album},
     'changeAlbum': {"descript": "Changes the information of any album", "func": artist.mod_album},
+    'simulation': {"descript": "simulate a day of reps", "func": p2admin.simulation},
 
 
 

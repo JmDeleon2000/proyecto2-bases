@@ -65,7 +65,7 @@ def reports():
         except:
             conn.rollback()
             print("Error, something went wrong with the connection")
-
+    
     elif arg == 5:
         try:
             cur.execute(
@@ -107,10 +107,10 @@ def ventasSemanales(inicio, final):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = ''''''
@@ -139,10 +139,10 @@ def ventasArtista(inicio, final, cantidad):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = ''''''
@@ -177,10 +177,10 @@ def ventasGenero(inicio, final, cantidad):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = ''''''
@@ -215,10 +215,10 @@ def masRep(cantidad, artista):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = ''''''

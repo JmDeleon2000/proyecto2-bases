@@ -371,10 +371,10 @@ def ventasSemanales(inicio, final):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT count(name) as sales, name
@@ -412,10 +412,10 @@ def ventasArtista(inicio, final, cantidad):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT count(name) as sales, name, artist.artistname
@@ -454,10 +454,10 @@ def ventasGenero(inicio, final, cantidad):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT count(name) as sales, song.genre
@@ -495,10 +495,10 @@ def masRep(cantidad, artista):
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT artist.artistname, name, reps
@@ -734,10 +734,10 @@ def earnings():
     try:
 
         connection = psycopg2.connect(user="postgres",
-                                      password="pw4pg",
+                                      password="123456",
                                       host="localhost",
-                                      port="5432",
-                                      database="p2")
+                                      port="5433",
+                                      database="proyecto3")
         cursor = connection.cursor()
 
         create_table_query = '''SELECT artist.artistname, name, reps, reps-(reps*0.7) as earnings

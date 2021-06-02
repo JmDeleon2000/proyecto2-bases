@@ -1,3 +1,7 @@
+import sqlite3 as sql
+import random
+from random import randint
+
 uinfo = {'mail': 'not logged in'}
 cur = []
 conn = []
@@ -321,3 +325,155 @@ def enable_album():
     else:
         print("That song doesn't exist")
         return
+
+songlist1 = [
+    'hi',
+    'tree',
+    'sky',
+    'mate',
+    'water',
+    'drops',
+    'te',
+    'tv',
+    'happy',
+    'cellphone',
+    'miss',
+    'you',
+    'music',
+    'crazy',
+    'lens',
+    'maybe',
+    'whatever',
+    'bye',
+    'my',
+    'mouse'
+]
+
+songlist2 = [
+    'lover',
+    'Ericka',
+    'horse',
+    'rave',
+    'crazy',
+    'haha',
+    'sushi',
+    'restaurant',
+    'sky',
+    'rain',
+    'sad',
+    'hehe',
+    'balloon',
+    'recipe',
+    'facade',
+    'mad',
+    'pet',
+    'lotion'
+]
+
+songlist3 = [
+    'cat',
+    'dog',
+    'random',
+    'belive',
+    'ring',
+    'plate',
+    'enemy',
+    'Lacoste',
+    'Adidas',
+    'Nike',
+    'note',
+    'forget',
+    'floor',
+    'book',
+    'picture',
+    'you',
+    'lie',
+    'fall',
+    'Kodak'
+]
+
+genrelist = [
+    'Rock',
+    'Pop',
+    'Rap',
+    'Hip hop',
+    'Dubstep',
+    'Balade',
+    'Alternative',
+    'Reggaeton',
+    'Sab hop',
+    'Metal',
+    'Ambient',
+    'EDM',
+    'R&B',
+    'Bedroomrock',
+    'Synthpop',
+    'Soul',
+    'Neofolk'
+]
+
+songnames = []
+
+def generate_random_song():
+    fir = random.choice(songlist1)
+    sec = random.choice(songlist2)
+    thir = random.choice(songlist3)
+    song = f'{fir} {sec} {thir}'
+    return song
+
+#random.sample(range(40, 99999), tracks)
+
+def insert_song(reps, songid, artist, name, genre, album):
+    '''songid = random.sample(range(40, 9999), tracks)
+    artist = random.sample(range(1, 24), tracks)
+    name = generate_random_song()
+    genre = random.choice(genrelist)
+    album = random.sample(range(1, 23), tracks)
+    reps = random.sample(range(reps), tracks)'''
+    query = f'''INSERT INTO song(songid, artist, name, genre, album, reps, visible, iframe) VALUES('''+str(songid)+''', '''+str(artist)+''', '''+ "'" + str(name) + "'" + ''', ''' + "'" + str(genre) + "'" + ''','''+str(album)+''',''' +str(reps)+''', TRUE, NULL)'''
+    cur.execute(query)
+    return query
+
+def insert_sale(song, date):
+    
+    query = f'''INSERT INTO sales VALUES ('''+ "'" + str(song) + "'" + ''', '''+ "'" + str(date) + "'" + ''', 1)'''
+    cur.execute(query)
+    return query
+
+def simulation():
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    cur.execute(
+        '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
+    auth = cur.fetchone()
+    if not(auth):
+        print("You don't have permissions to use this function")
+        return
+    if not(auth[0]):
+        print("You don't have permissions to use this function")
+        return
+    date = input('\n Enter date to simulate YYYY-MM-DD\n')
+    tracks = input('\n Enter number of tracks to simulate\n')
+    reps = input('\n Enter max number of reps to simulate\n')
+    rep = int(reps)
+    track = int(tracks)
+    songid = random.sample(range(40, 9999), track)
+    artist = random.sample(range(1, 24), track)
+    genre = random.choice(genrelist)
+    album = random.sample(range(1, 23), track)
+    repe = random.sample(range(rep), track)
+
+    for i in range(0, track):
+        name = generate_random_song()
+        songidnotrep = random.choice(songid)
+        songid.remove(songidnotrep)
+        insert_song(random.choice(repe), songidnotrep, random.choice(artist), name, genre, random.choice(album))
+
+    for i in range(0, rep):
+        insert_sale(randint(1,32), date)
+    
+    
+    print("Simulation finished")
+    conn.commit()
+        
