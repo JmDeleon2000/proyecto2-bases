@@ -1,10 +1,97 @@
-import sqlite3 as sql
+from re import X
+import pymongo
 import random
 from random import randint
+from datetime import datetime
+
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+
+mydb = myclient["proyecto3"]
+
 
 uinfo = {'mail': 'not logged in'}
 cur = []
 conn = []
+
+
+def recommend():
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    if not(uinfo['admin']):
+        print("You don't have permission to use this function")
+        return
+    try:
+        users = mydb.list_collection_names()
+        count = 0
+        for i in users:
+            if i == 'current_songs':
+                continue
+            count += 1
+            if count == 9:
+                break
+            print(i + ':')
+            mycol = mydb[i]
+            reps = []
+            today = datetime.now().today().strftime('%Y-%m-%d')
+            for x in mycol.find({'date': today}):
+                reps.append(x['genre'])
+            genre = reps[randint(0, len(reps)-1)]
+            print(mydb['current_songs'].find_one({'genre': genre})['song'])
+    except:
+        print('No hay suficiente información en MongoDB')
+
+
+def update_songs():
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    if not(uinfo['admin']):
+        print("You don't have permission to use this function")
+        return
+    cur.execute('''SELECT name, genre FROM song''')
+    songs = cur.fetchall()
+    mycol = mydb['current_songs']
+
+    mycol.delete_many({})
+
+    insertion = []
+    for i in songs:
+        x = {'song': str(i[0]), 'genre': str(i[1])}
+        insertion.append(x)
+    mycol.insert_many(insertion)
+    print("Song information updated!")
+
+
+def update_user_reps():
+    if uinfo == {'mail': 'not logged in'}:
+        print('You need to login first')
+        return
+    if not(uinfo['admin']):
+        print("You don't have permission to use this function")
+        return
+    arg = input(
+        'Provide the name of the user whose information you want to update: ')
+    arg2 = input(
+        'Provide the date you want to count the reproductions on (YYYY-MM-DD): ')
+    cur.execute('''SELECT uid FROM users WHERE mail = %s''', (arg,))
+    uid = cur.fetchone()
+    if not(uid):
+        print("That user appears to not exist")
+        return
+    cur.execute('''SELECT sales.saledate, song.genre FROM  sales INNER JOIN song ON songid = sales.song 
+    WHERE sales.customer = %s and saledate = %s''', (uid[0], arg2))
+    res = cur.fetchall()
+    if not(res):
+        print("That users doesn't have reproductions that date")
+        return
+    mycol = mydb[arg]
+    mycol.delete_many({'date': arg2})
+    insertion = []
+    for i in res:
+        x = {'date': str(i[0]), 'genre': i[1], 'mail': arg}
+        insertion.append(x)
+    mycol.insert_many(insertion)
 
 
 def grant():  # todo
@@ -326,6 +413,7 @@ def enable_album():
         print("That song doesn't exist")
         return
 
+
 songlist1 = [
     'hi',
     'tree',
@@ -414,6 +502,7 @@ genrelist = [
 
 songnames = []
 
+
 def generate_random_song():
     fir = random.choice(songlist1)
     sec = random.choice(songlist2)
@@ -421,36 +510,19 @@ def generate_random_song():
     song = f'{fir} {sec} {thir}'
     return song
 
-#random.sample(range(40, 99999), tracks)
 
-def insert_song(reps, songid, artist, name, genre, album):
-    '''songid = random.sample(range(40, 9999), tracks)
-    artist = random.sample(range(1, 24), tracks)
-    name = generate_random_song()
-    genre = random.choice(genrelist)
-    album = random.sample(range(1, 23), tracks)
-    reps = random.sample(range(reps), tracks)'''
-    query = f'''INSERT INTO song(songid, artist, name, genre, album, reps, visible, iframe) VALUES('''+str(songid)+''', '''+str(artist)+''', '''+ "'" + str(name) + "'" + ''', ''' + "'" + str(genre) + "'" + ''','''+str(album)+''',''' +str(reps)+''', TRUE, NULL)'''
-    cur.execute(query)
-    return query
+def insert_sale(song, date, uid):
 
-def insert_sale(song, date):
-    
-    query = f'''INSERT INTO sales VALUES ('''+ "'" + str(song) + "'" + ''', '''+ "'" + str(date) + "'" + ''', 1)'''
-    cur.execute(query)
-    return query
+    cur.execute('''INSERT INTO sales (song, saledate, customer) VALUES (%s, %s, %s)''',
+                (song, date, uid,))
+
 
 def simulation():
     if uinfo == {'mail': 'not logged in'}:
         print('You need to login first')
         return
-    cur.execute(
-        '''SELECT p7 FROM users INNER JOIN cred ON users.credenciales = credid WHERE uid = %s''', (uinfo['uid'], ))
-    auth = cur.fetchone()
-    if not(auth):
-        print("You don't have permissions to use this function")
-        return
-    if not(auth[0]):
+
+    if not(uinfo['admin']):
         print("You don't have permissions to use this function")
         return
     date = input('\n Enter date to simulate YYYY-MM-DD\n')
@@ -458,22 +530,33 @@ def simulation():
     reps = input('\n Enter max number of reps to simulate\n')
     rep = int(reps)
     track = int(tracks)
-    songid = random.sample(range(40, 9999), track)
-    artist = random.sample(range(1, 24), track)
+    #songid = random.sample(range(40, 9999), track)
+    artist = randint(1, 20)
     genre = random.choice(genrelist)
-    album = random.sample(range(1, 23), track)
-    repe = random.sample(range(rep), track)
+    album = randint(1, 20)
+    repe = randint(1, 20)
+
+    # ublic.new_song(song_id integer, n_artist integer, n_name character varying,
+    # n_genre character varying, n_album integer, n_reps integer, n_visible boolean,
+    # n_iframe character varying, changer character varying)
+    cur.execute('''SELECT songid + 1 FROM song ORDER BY songid DESC LIMIT 1''')
+    songid = cur.fetchone()[0]
 
     for i in range(0, track):
-        name = generate_random_song()
-        songidnotrep = random.choice(songid)
-        songid.remove(songidnotrep)
-        insert_song(random.choice(repe), songidnotrep, random.choice(artist), name, genre, random.choice(album))
+        name = 'randsong' + str(songid)
+        cur.execute('''INSERT INTO song values(%s, %s,%s, %s,%s, %s,%s, %s)''',
+                    (songid, artist, name, genre, album, repe, True, '',))
+        songid += 1
+
+    cur.execute('''SELECT uid FROM users''')
+    uids = cur.fetchall()
+
+    cur.execute('''SELECT songid FROM song''')
+    songs = cur.fetchall()
 
     for i in range(0, rep):
-        insert_sale(randint(1,32), date)
-    
-    
+        insert_sale(songs[randint(1, len(songs)-1)],
+                    date, uids[randint(1, len(uids)-1)])
+
     print("Simulation finished")
     conn.commit()
-        

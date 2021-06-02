@@ -6,10 +6,10 @@ import p2admin
 import artist
 
 connection = psycopg2.connect(user="postgres",
-                              password="123456",
+                              password="pw4pg",
                               host="localhost",
-                              port="5433",
-                              database="proyecto3")
+                              port="5432",
+                              database="p2")
 cur = connection.cursor()
 user.cur = cur
 user.conn = connection
@@ -52,7 +52,7 @@ def login():
         else:
             print('Wrong e-mail or password')
         connection.commit()
-        print(uinfo)
+        # print(uinfo)
     except (Exception, psycopg2.DatabaseError) as error:
         print("Email no registrado", error)
     user.uinfo = uinfo
@@ -93,8 +93,10 @@ cli = {
     'changeSong': {"descript": "Changes the information of any song", "func": artist.mod_song},
     'newAlbum': {"descript": "Creates a new album", "func": artist.new_album},
     'changeAlbum': {"descript": "Changes the information of any album", "func": artist.mod_album},
-    'simulation': {"descript": "simulate a day of reps", "func": p2admin.simulation},
-
+    'simulation': {"descript": "Simulate service usage by artists and users", "func": p2admin.simulation},
+    'mongoUpdate': {"descript": "Adds the reproductions of the user in a MongoDB so that user can use the recommend feature", "func": p2admin.update_user_reps},
+    'recommend': {"descript": "Recommends songs you might like", "func": p2admin.recommend},
+    'mongoSong': {"descript": "Updates songinfo in MongoDB", "func": p2admin.update_songs},
 
 
 }
@@ -103,7 +105,7 @@ uinfo = {'mail': 'not logged in'}
 
 end = False
 while not(end):
-    res = input('Proyecto2: ' + str(uinfo['mail']) + '-> ')
+    res = input('Proyecto3: ' + str(uinfo['mail']) + '-> ')
     if res in cli.keys():
         cli[res]['func']()
     else:

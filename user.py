@@ -9,6 +9,7 @@ from tkinter import messagebox
 from datetime import datetime
 import webbrowser
 
+
 uinfo = {'mail': 'not logged in'}
 cur = []
 conn = []
