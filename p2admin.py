@@ -527,7 +527,7 @@ def simulation():
         return
     date = input('\n Enter date to simulate YYYY-MM-DD\n')
     tracks = input('\n Enter number of tracks to simulate\n')
-    reps = input('\n Enter max number of reps to simulate\n')
+    reps = input('\n Enter max number of reproductions to simulate\n')
     rep = int(reps)
     track = int(tracks)
     #songid = random.sample(range(40, 9999), track)
